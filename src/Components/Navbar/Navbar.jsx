@@ -1,7 +1,9 @@
 import React from "react";
 import { Search } from "../Search/Search";
 import "./navbar.css";
+import { useNavigate } from "react-router-dom";
 export const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <div className="navbar-outer-container">
       <div className="navbar-inner-container">
@@ -11,7 +13,7 @@ export const Navbar = () => {
         <Search className="search" />
         <div className="navbar-inner-container-right">
           <p>Movies</p>
-          <p>Watch List</p>
+          <p onClick={() => navigate("/wishlist")}>Wish List</p>
           <p>Starred Movies</p>
         </div>
       </div>
