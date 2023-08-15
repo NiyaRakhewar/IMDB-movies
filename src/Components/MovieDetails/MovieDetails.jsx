@@ -1,16 +1,28 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./movieDetails.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MoviesContext } from "../../Context/MoviesContext";
 
 export const MovieDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { state } = useContext(MoviesContext);
+  const [currId, setCurrId] = useState([]);
+
+  const { state, dispatch } = useContext(MoviesContext);
 
   const movieDetail = [...state.moviesData]?.find(
     (movie) => movie.id === Number(id)
   );
+
+  const clickHandlerWishlist = (movie) => {
+    setCurrId([...currId, movie.id]);
+    dispatch({ type: "ADD_TO_WISHLIST", payload: movie });
+  };
+
+  const clickHandlerGoToWishlist = () => {
+    navigate("/wishlist");
+  };
 
   const {
     title,
@@ -52,7 +64,25 @@ export const MovieDetails = () => {
           </p>
           <div className="detail-btns">
             <button className="detail-star">Star</button>
-            <button className="detail-wishlist">Add to Wishlist</button>
+            {currId.includes(movieDetail.id) ? (
+              <button
+                className={
+                  currId.includes(movieDetail.id)
+                    ? "wishlist added"
+                    : "wishlist"
+                }
+                onClick={() => clickHandlerGoToWishlist(movieDetail)}
+              >
+                Go To Wishlist
+              </button>
+            ) : (
+              <button
+                className="detail-wishlist"
+                onClick={() => clickHandlerWishlist(movieDetail)}
+              >
+                Add to Wishlist
+              </button>
+            )}
           </div>
         </div>
       </div>

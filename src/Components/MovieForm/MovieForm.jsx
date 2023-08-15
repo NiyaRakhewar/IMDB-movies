@@ -43,7 +43,7 @@ export const MovieForm = ({ show, setShow }) => {
   };
 
   return (
-    <div className=".new-movie-form">
+    <div className="new-movie-form">
       <label>
         Title:
         <input
@@ -94,12 +94,15 @@ export const MovieForm = ({ show, setShow }) => {
           placeholder="year"
         />
       </label>
-      <textarea
-        name="summary"
-        value={newMovie.summary}
-        onChange={handleInputChange}
-        placeholder="Summary"
-      />
+      <label>
+        Summary:
+        <textarea
+          name="summary"
+          value={newMovie.summary}
+          onChange={handleInputChange}
+          placeholder="Summary"
+        />
+      </label>
 
       {/* Other input fields for cast, genre, rating, director, writer, and imageURL */}
       <button onClick={handleAddMovie}>Save</button>

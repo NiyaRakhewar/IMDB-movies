@@ -10,11 +10,25 @@ export const reducer = (state, action) => {
     case "ADD_MOVIE":
       return { ...state, moviesData: [action.payload, ...state.moviesData] };
 
-    case "ADD-WISHLIST-ITEM":
-      return { ...state, wishlist: [action.payload, ...state.wishlist] };
+    case "ADD_TO_WISHLIST": {
+      const isAlreadyInWishlist = state.wishlist.find(
+        (item) => item.id === action.payload.id
+      );
+      if (isAlreadyInWishlist) {
+        return state;
+      }
+      return {
+        ...state,
+        wishlist: [...state.wishlist, action.payload],
+      };
+    }
 
-    case "REMOVE-WISHLIST-ITEM":
-      return { ...state.wishlist, wishlist: action.payload };
+    case "REMOVE_FROM_WISHLIST": {
+      const filteredData = state.wishlist.filter(
+        (el) => el.id !== action.payload.id
+      );
+      return { ...state, wishlist: filteredData };
+    }
 
     default:
       return state;

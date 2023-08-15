@@ -3,21 +3,17 @@ import "./home.css";
 import { MoviesContext } from "../../Context/MoviesContext";
 import { useNavigate } from "react-router-dom";
 import { MovieForm } from "../MovieForm/MovieForm";
+
 export const Home = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(MoviesContext);
 
   const [show, setShow] = useState(false);
+  const [currId, setCurrId] = useState([]);
 
   const [genreFilter, setGenreFilter] = useState("All Genre");
-
   const [yearFilter, setYearFilter] = useState("Release Year");
-
   const [ratingFilter, setRatingFilter] = useState("All Rating");
-
-  const [isWishlisted, setIsWishlisted] = useState(false);
-
-  // console.log("state", state);
 
   const allGenres = [
     ...new Set([...state.moviesData].flatMap((movie) => movie.genre)),
@@ -31,21 +27,15 @@ export const Home = () => {
 
   const changeHandlerGenre = (value) => {
     setGenreFilter(value);
-    console.log("genre", value);
-
-    // setData(filteredGenre);
   };
+
   const filteredGenre =
     genreFilter === "All Genre"
       ? state.moviesData
       : state.moviesData.filter(({ genre }) => genre.includes(genreFilter));
 
-  console.log("genbeFilter", filteredGenre);
-
   const changeHandlerYear = (value) => {
     setYearFilter(value);
-
-    // console.log("genre", filteredGenre);
   };
 
   const filteredYear =
@@ -53,12 +43,8 @@ export const Home = () => {
       ? filteredGenre
       : filteredGenre.filter(({ year }) => Number(year) >= Number(yearFilter));
 
-  console.log("yearFilter", filteredYear);
-
   const changeHandlerRating = (value) => {
     setRatingFilter(value);
-
-    // console.log("genre", filteredGenre);
   };
 
   const filteredRating =
@@ -72,20 +58,13 @@ export const Home = () => {
     setShow(!show);
   };
 
-  const clickHandlerWishlist = (el) => {
-    const wishlistItem = state.moviesData?.find((movie) => movie.id === el.id);
-
-    dispatch({ type: "ADD-WISHLIST-ITEM", payload: wishlistItem });
-
-    setIsWishlisted(true);
+  const clickHandlerWishlist = (movie) => {
+    setCurrId([...currId, movie.id]);
+    dispatch({ type: "ADD_TO_WISHLIST", payload: movie });
   };
 
-  const clickHandlerRemoveWishlist = (el) => {
-    const removeWishlist = state.wishlist?.filter(
-      (movie) => movie.id !== el.id
-    );
-    dispatch({ type: "REMOVE-WISHLIST-ITEM", payload: removeWishlist });
-    setIsWishlisted(false);
+  const clickHandlerGoToWishlist = (movie) => {
+    navigate("/wishlist");
   };
 
   return (
@@ -93,26 +72,30 @@ export const Home = () => {
       <div className="home-inner-container">
         <div className="home-filter-container">
           <h2>Movies</h2>
+          {/* Genre Filter */}
           <select onChange={(e) => changeHandlerGenre(e.target.value)}>
-            <option>All Genre </option>
+            <option>All Genre</option>
             {allGenres?.map((genre) => (
-              <option>{genre}</option>
+              <option key={genre}>{genre}</option>
             ))}
           </select>
+          {/* Year Filter */}
           <select onChange={(e) => changeHandlerYear(e.target.value)}>
             <option>Release Year</option>
             {allYear?.map((year) => (
-              <option>{year}</option>
+              <option key={year}>{year}</option>
             ))}
           </select>
+          {/* Rating Filter */}
           <select onChange={(e) => changeHandlerRating(e.target.value)}>
             <option>All Rating</option>
             {allRating?.map((year) => (
-              <option>{year}</option>
+              <option key={year}>{year}</option>
             ))}
           </select>
           <div>
             <button onClick={clickHandler}>Add Movie</button>
+            {/* Modal */}
             {show && (
               <div className="modal-container active">
                 <div className="modal-content">
@@ -126,10 +109,11 @@ export const Home = () => {
           </div>
         </div>
         <div className="movies-list-container">
+          {/* Movie Cards */}
           {filteredRating?.map((movie) => {
             const { imageURL, title, summary, id } = movie;
             return (
-              <div className="movie-card-container">
+              <div className="movie-card-container" key={id}>
                 <div className="movie-image">
                   <img src={imageURL} alt={title} className="movie-card-img" />
                   <h2
@@ -141,21 +125,29 @@ export const Home = () => {
                 </div>
                 <p className="movie-summary">{summary}</p>
                 <div className="btns">
-                  <button className="star">Star</button>
+                  {/* Wishlist Button */}
 
-                  {isWishlisted ? (
+                  {currId.includes(movie.id) ? (
                     <button
-                      className="wishlist"
-                      onClick={(movie) => clickHandlerRemoveWishlist(movie)}
+                      className={
+                        currId.includes(movie.id)
+                          ? "wishlist added"
+                          : "wishlist"
+                      }
+                      onClick={() => clickHandlerGoToWishlist(movie)}
                     >
-                      Remove Wishlist
+                      Go To Wishlist
                     </button>
                   ) : (
                     <button
-                      className="wishlist"
-                      onClick={(movie) => clickHandlerWishlist(movie)}
+                      className={
+                        currId.includes(movie.id)
+                          ? "wishlist added"
+                          : "wishlist"
+                      }
+                      onClick={() => clickHandlerWishlist(movie)}
                     >
-                      Add to Wishlist
+                      Add to Wishlist{" "}
                     </button>
                   )}
                 </div>
